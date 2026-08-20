@@ -1,8 +1,3 @@
-/*
-    19:09
-    20/08/2026
-*/
-
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQW25_w_EmNgBsBR2Ud7_dj2Ev6hwjp-G3qLqLwWARGHuCFRin9MOrIeLkRkSuIc8aYg/exec";
 const LIKED_KEY = "nhs_liked_ids_v2";
 const MAX_LENGTH = 20000;
@@ -440,9 +435,12 @@ function renderAll() {
 async function loadApprovedConfessions() {
     try {
         const response = await fetch(SCRIPT_URL + "?t=" + Date.now());
+        if (!response.ok) throw new Error("Máy chủ phản hồi lỗi.");
         const data = await response.json();
-        const rawString = JSON.stringify(data);
+        
+        if (!Array.isArray(data)) throw new Error("Dữ liệu không đúng định dạng.");
 
+        const rawString = JSON.stringify(data);
         if (rawString === lastRawDataString) return;
         lastRawDataString = rawString;
 
@@ -453,9 +451,9 @@ async function loadApprovedConfessions() {
             const likes = existing ? Math.max(existing.likes, serverLikes) : serverLikes;
 
             return {
-                rowId: item.rowId,
+                rowId: item.rowId || index,
                 number: index + 1,
-                content: item.content,
+                content: item.content || "",
                 time: item.time,
                 likes: likes,
                 comments: item.comments || []
@@ -465,6 +463,11 @@ async function loadApprovedConfessions() {
         renderAll();
     } catch (err) {
         console.error("Lỗi tải dữ liệu confession:", err);
+        if (list.innerHTML === "") {
+            list.innerHTML = `<p style='text-align:center; color:var(--text-muted); padding:20px;'>
+                <i class="fa-solid fa-triangle-exclamation" style="color:var(--primary-color);"></i> Không thể tải danh sách bài viết từ máy chủ. Vui lòng kiểm tra lại kết nối mạng hoặc thử lại sau!
+            </p>`;
+        }
     }
 }
 
@@ -526,7 +529,7 @@ async function addComment(rowId, text, submitBtn, commentInput) {
 
     } catch (err) {
         console.error("Lỗi gửi bình luận:", err);
-        alert("Không thể gửi bình luận. Vui lòng thử lại sau!");
+        alert("Không thể gửi bình luận do lỗi kết nối. Vui lòng thử lại sau!");
         await loadApprovedConfessions();
     }
 }
@@ -633,7 +636,7 @@ if (form) {
             clearError();
         } catch (err) {
             console.error("Lỗi gửi confession:", err);
-            alert("Đã xảy ra lỗi trong quá trình gửi. Vui lòng thử lại!");
+            alert("Đã xảy ra lỗi kết nối trong quá trình gửi. Vui lòng kiểm tra lại mạng hoặc thử lại sau!");
         } finally {
             if (submitConfessionBtn) {
                 submitConfessionBtn.dataset.loading = "false";

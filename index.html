@@ -1,8 +1,3 @@
-<!-- 
-    19:10
-    20/08/2026
--->
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -26,13 +21,11 @@
     <div class="app_container">
         <!-- Banner & Header Section -->
         <header class="hero_section">
-            <!-- Nút README đối xứng bên góc trái -->
             <button id="readme_toggle_btn" title="Hướng dẫn sử dụng / README">
                 <i class="fa-solid fa-book-open"></i>
                 <span>README</span>
             </button>
 
-            <!-- Nút Chế độ tối ở góc phải -->
             <button id="theme_toggle_btn" title="Chuyển đổi giao diện">
                 <i class="fa-solid fa-moon"></i>
                 <span class="theme_text">Chế độ tối</span>
@@ -49,7 +42,7 @@
 
             <div id="chu_thich">
                 <i class="fa-solid fa-circle-info info_icon"></i>
-                <span>Nền tảng này được xây dựng để học sinh <mark>chia sẻ tâm tư, tình cảm và những kỷ niệm đẹp về trường lớp</mark>. Admin sẽ tiến hành kiểm duyệt nội dung kỹ lưỡng nhằm duy trì một môi trường tích cực và văn minh.</span>
+                <span>Nơi chia sẻ tâm tư, kỷ niệm học đường THPT Nguyễn Hùng Sơn một cách văn minh và tích cực.</span>
             </div>
         </header>
 
@@ -64,12 +57,10 @@
                     <div class="textarea_wrapper">
                         <textarea id="confession_input" rows="2" placeholder="Nhập nội dung tâm sự ẩn danh của bạn tại đây... (Nhấn Enter để xuống dòng)"></textarea>
                         
-                        <!-- Nút emoji nằm gọn bên trong khung nhập -->
                         <button type="button" class="emoji_toggle_btn inside_input" title="Chọn biểu cảm">
                             <i class="fa-regular fa-face-smile"></i>
                         </button>
 
-                        <!-- Bảng chọn Emoji chính (hiển thị dạng popup nổi) -->
                         <div class="emoji_picker_container main_emoji_popup" style="display: none;">
                             <div class="emoji_picker">
                                 <span class="emoji_item" data-emoji="😊">😊</span>
@@ -155,18 +146,21 @@
                     <li>Toàn bộ bài gửi và bình luận đều được hệ thống kiểm duyệt trước khi hiển thị công khai nhằm đảm bảo sự lành mạnh và văn minh chung.</li>
                 </ul>
 
+                <h3>⚠️ Lưu ý khi sử dụng</h3>
+                <p>Vì hệ thống chạy qua máy chủ trung gian nên đôi lúc sẽ bị chậm một chút khi có quá nhiều bạn truy cập cùng lúc. Nếu gửi bài hoặc tải trang bị chậm, bạn hãy kiên nhẫn đợi giây lát hoặc tải lại trang nhé!</p>
+
                 <!-- Phần thông tin tác giả -->
                 <div class="project_author">
-                    <span>A project by</span> 
-                    <a href="https://github.com/Pythonisbest-spec" target="_blank" rel="noopener noreferrer">Pythonisbest-spec</a> 
-                    <span>&</span> 
-                    <a href="https://github.com/ntk15509" target="_blank" rel="noopener noreferrer">ntk15509</a>
+                    <span>A project by</span>
+                    <div>
+                        <a href="https://github.com/Pythonisbest-spec" target="_blank" rel="noopener noreferrer">Pythonisbest-spec</a> &amp; 
+                        <a href="https://github.com/ntk15509" target="_blank" rel="noopener noreferrer">ntk15509</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Lớp phủ làm mờ nền -->
     <div id="confession_backdrop"></div>
 
     <script src="script.js"></script>
