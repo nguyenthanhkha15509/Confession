@@ -1,3 +1,11 @@
+
+/*  23:54
+    20/08/2026
+*/
+
+
+
+
 :root {
     --primary-color: #f43f5e;
     --primary-hover: #e11d48;
@@ -985,7 +993,7 @@ h4 {
     color: #f1f5f9;
 }
 
-/* --- Phần thông tin tác giả (Chống tràn viền) --- */
+/* --- Phần thông tin tác giả --- */
 .project_author {
     margin-top: 25px;
     padding-top: 15px;
@@ -1003,14 +1011,17 @@ h4 {
 .project_author a {
     color: var(--accent-color);
     font-weight: 700;
-    text-decoration: none;
+    text-decoration: none; 
+    border-bottom: 1.5px solid var(--accent-color);
+    padding-bottom: 0px; /* Đã hạ xuống 0px để sát nét vào chân chữ */
+    line-height: 1.1;     /* Tùy chỉnh line-height cho vừa vặn */
     transition: all 0.2s ease;
     display: inline-block;
 }
 
 .project_author a:hover {
-    text-decoration: underline;
-    opacity: 0.8;
+    opacity: 0.7; 
+    border-bottom-width: 2px;
 }
 
 [data-theme="dark"] .project_author {
