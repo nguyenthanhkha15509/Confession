@@ -1,3 +1,8 @@
+/*
+    19:09
+    20/08/2026
+*/
+
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQW25_w_EmNgBsBR2Ud7_dj2Ev6hwjp-G3qLqLwWARGHuCFRin9MOrIeLkRkSuIc8aYg/exec";
 const LIKED_KEY = "nhs_liked_ids_v2";
 const MAX_LENGTH = 20000;
@@ -45,6 +50,39 @@ if (themeToggleBtn) {
             localStorage.setItem("nhs_theme", "dark");
             icon.className = "fa-solid fa-sun";
             if (themeText) themeText.textContent = "Chế độ sáng";
+        }
+    });
+}
+
+// --- Xử lý Modal README ---
+const readmeToggleBtn = document.querySelector("#readme_toggle_btn");
+const readmeModal = document.querySelector("#readme_modal");
+const closeReadmeBtn = document.querySelector("#close_readme_btn");
+
+if (readmeToggleBtn && readmeModal) {
+    readmeToggleBtn.addEventListener("click", () => {
+        readmeModal.classList.add("active");
+        document.body.classList.add("confession-modal-open");
+    });
+}
+
+function closeReadme() {
+    if (readmeModal) {
+        readmeModal.classList.remove("active");
+        if (!activeOpenRowId) {
+            document.body.classList.remove("confession-modal-open");
+        }
+    }
+}
+
+if (closeReadmeBtn) {
+    closeReadmeBtn.addEventListener("click", closeReadme);
+}
+
+if (readmeModal) {
+    readmeModal.addEventListener("click", (e) => {
+        if (e.target === readmeModal) {
+            closeReadme();
         }
     });
 }
@@ -178,8 +216,8 @@ function updateOrRenderBox(confession) {
                 <div class="comment_list"></div>
                 <div class="comment_form_wrapper">
                     <form class="comment_form">
-                        <textarea class="comment_input" rows="1" placeholder="Viết bình luận... (Enter để xuống dòng)" maxlength="20000"></textarea>
-                        <button type="button" class="comment_emoji_btn" title="Chọn emoji"><i class="fa-regular fa-face-smile"></i></button>
+                        <textarea class="comment_input" rows="1" placeholder="Viết bình luận... (Nhấn Enter để xuống dòng)" maxlength="20000"></textarea>
+                        <button type="button" class="comment_emoji_btn" title="Chọn biểu cảm"><i class="fa-regular fa-face-smile"></i></button>
                         <button type="submit" class="comment_submit">Gửi</button>
                     </form>
                     <div class="emoji_picker_container comment_emoji_container" style="display: none;">
@@ -358,9 +396,9 @@ function renderAll() {
 
     if (filteredConfessions.length === 0) {
         if (currentConfessions.length === 0) {
-            list.innerHTML = "<p style='text-align:center; color:var(--text-muted); padding:20px;'>Chưa có confession nào được duyệt.</p>";
+            list.innerHTML = "<p style='text-align:center; color:var(--text-muted); padding:20px;'>Chưa có bài viết nào được phê duyệt.</p>";
         } else {
-            list.innerHTML = `<p style='text-align:center; color:var(--text-muted); padding:20px;'>Không tìm thấy confession khớp với điều kiện tìm kiếm.</p>`;
+            list.innerHTML = `<p style='text-align:center; color:var(--text-muted); padding:20px;'>Không tìm thấy bài viết phù hợp với điều kiện tìm kiếm.</p>`;
         }
         return;
     }
@@ -426,7 +464,7 @@ async function loadApprovedConfessions() {
 
         renderAll();
     } catch (err) {
-        console.error("Lỗi tải confession:", err);
+        console.error("Lỗi tải dữ liệu confession:", err);
     }
 }
 
@@ -451,7 +489,7 @@ async function toggleLike(rowId) {
             body: JSON.stringify({ action: "like", rowId: Number(rowId) })
         });
     } catch (err) {
-        console.error("Lỗi tim:", err);
+        console.error("Lỗi cập nhật lượt thích:", err);
     }
 }
 
@@ -471,7 +509,7 @@ async function addComment(rowId, text, submitBtn, commentInput) {
     }
 
     commentInput.value = "";
-    commentInput.style.height = "40px";
+    commentInput.style.height = "46px";
 
     try {
         await fetch(SCRIPT_URL, {
@@ -487,8 +525,8 @@ async function addComment(rowId, text, submitBtn, commentInput) {
         }, 1000);
 
     } catch (err) {
-        console.error("Lỗi bình luận:", err);
-        alert("Không thể gửi bình luận, vui lòng thử lại!");
+        console.error("Lỗi gửi bình luận:", err);
+        alert("Không thể gửi bình luận. Vui lòng thử lại sau!");
         await loadApprovedConfessions();
     }
 }
@@ -564,12 +602,12 @@ if (form) {
         const content = input.value.trim();
 
         if (content === "") {
-            showError("Bạn chưa nhập nội dung confession.");
+            showError("Vui lòng nhập nội dung confession trước khi gửi.");
             return;
         }
 
         if (content.length > MAX_LENGTH) {
-            showError(`Confession quá dài, tối đa ${MAX_LENGTH} ký tự.`);
+            showError(`Nội dung quá dài, giới hạn tối đa là ${MAX_LENGTH} ký tự.`);
             return;
         }
 
@@ -589,19 +627,19 @@ if (form) {
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify({ action: "confession", content: content })
             });
-            alert("Đã gửi confession thành công! Vui lòng chờ admin duyệt.");
+            alert("Gửi bài thành công! Bài viết của bạn sẽ được hiển thị sau khi admin kiểm duyệt.");
             input.value = "";
             input.style.height = "auto";
             clearError();
         } catch (err) {
             console.error("Lỗi gửi confession:", err);
-            alert("Có lỗi xảy ra, vui lòng thử lại!");
+            alert("Đã xảy ra lỗi trong quá trình gửi. Vui lòng thử lại!");
         } finally {
             if (submitConfessionBtn) {
                 submitConfessionBtn.dataset.loading = "false";
                 submitConfessionBtn.disabled = false;
                 submitConfessionBtn.style.opacity = "1";
-                submitConfessionBtn.innerHTML = `<span>Gửi</span><i class="fa-solid fa-arrow-up-from-bracket"></i>`;
+                submitConfessionBtn.innerHTML = `<span>Gửi bài</span><i class="fa-solid fa-arrow-up-from-bracket"></i>`;
             }
         }
     });
