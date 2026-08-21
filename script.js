@@ -1,11 +1,6 @@
-
-/*  23:54
-    20/08/2026
+/*  17:36
+    21/08/2026
 */
-
-
-
-
 
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQW25_w_EmNgBsBR2Ud7_dj2Ev6hwjp-G3qLqLwWARGHuCFRin9MOrIeLkRkSuIc8aYg/exec";
 const LIKED_KEY = "nhs_liked_ids_v2";
@@ -323,6 +318,7 @@ function updateOrRenderBox(confession) {
             event.preventDefault();
             const text = commentInput.value.trim();
             if (!text) return;
+            
             commentEmojiContainer.style.display = "none";
             await addComment(confession.rowId, text, commentSubmitBtn, commentInput);
         });
@@ -509,6 +505,7 @@ async function addComment(rowId, text, submitBtn, commentInput) {
     const strId = String(rowId);
     const confession = currentConfessions.find(c => String(c.rowId) === strId);
     
+    // 1. Hiển thị ngay lập tức lên giao diện nguyên bản 100% (giữ nguyên dấu '=' nếu người dùng nhập)
     const tempComment = {
         content: text,
         time: new Date().toISOString()
@@ -523,18 +520,25 @@ async function addComment(rowId, text, submitBtn, commentInput) {
     commentInput.value = "";
     commentInput.style.height = "46px";
 
+    // 2. Tạo bản gửi lên Server: Nếu bắt đầu bằng '=' thì tự động thêm dấu `'` vào đầu để Google Sheets an toàn
+    let serverSendText = text;
+    if (serverSendText.startsWith("=")) {
+        serverSendText = "'" + serverSendText;
+    }
+
     try {
         await fetch(SCRIPT_URL, {
             method: "POST",
             mode: "no-cors",
             headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({ action: "comment", rowId: Number(rowId), content: text })
+            body: JSON.stringify({ action: "comment", rowId: Number(rowId), content: serverSendText })
         });
         
+        // Delay 1.5 giây để server lưu xong vào Sheets, sau đó mới đồng bộ lại dữ liệu thật từ máy chủ
         setTimeout(async () => {
             lastRawDataString = "";
             await loadApprovedConfessions();
-        }, 1000);
+        }, 1500);
 
     } catch (err) {
         console.error("Lỗi gửi bình luận:", err);
@@ -611,7 +615,7 @@ if (form) {
             return;
         }
 
-        const content = input.value.trim();
+        let content = input.value.trim();
 
         if (content === "") {
             showError("Vui lòng nhập nội dung confession trước khi gửi.");
@@ -621,6 +625,11 @@ if (form) {
         if (content.length > MAX_LENGTH) {
             showError(`Nội dung quá dài, giới hạn tối đa là ${MAX_LENGTH} ký tự.`);
             return;
+        }
+
+        // Xử lý chống lỗi Google Sheets nhận diện nhầm confession là công thức
+        if (content.startsWith("=")) {
+            content = "'" + content;
         }
 
         if (mainEmojiContainer) mainEmojiContainer.style.display = "none";
